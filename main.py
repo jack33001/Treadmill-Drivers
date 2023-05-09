@@ -3,7 +3,7 @@ import cotask
 import task_share
 import gc
 
-def send_recv_data(can):
+def send_recv_data(can,force,location,speed):
     # if there is a message waiting, receive it and raise the flag
     if can.any() == 1:
         received = can.recv(0)                 # receive message on FIFO 0
@@ -27,7 +27,7 @@ def force_sensing():
     # find the net force and position
     '''insert code here'''
 
-def run_treadmill():
+def run_treadmill(controller):
     # run controller
     '''insert code here'''
     # run stepper driver
@@ -35,22 +35,18 @@ def run_treadmill():
     pass
 
 def mastermind():
-    # init stuff
-    '''insert code here'''
-    # run each thing
-    '''insert code here'''
+    # setttin da flagz
     pass
 
 
 if __name__ == "__main__": 
-
     # making and initializing objects:
     # CAN
     can = CAN(1, CAN.LOOPBACK)
     can.setfilter(0, CAN.LIST16, 0, (123, 124, 125, 126))  # set a filter to receive messages with id=123, 124, 125 and 126
 
     # Controller
-
+    controller = 5 '''change this to controller object'''
 
     # Measurement
 
@@ -68,9 +64,9 @@ if __name__ == "__main__":
     # of memory after a while and quit. Therefore, use tracing only for 
     # debugging and set trace to False when it's not needed
     task_mastermind = cotask.Task(mastermind(), name = 'Task_Mastermind', priority = 1, period = 5, profile = True, trace = False)
-    task_run_treadmill = cotask.Task(run_treadmill(), name = 'Task_Run_Treadmill', priority = 1, period = 5, profile = True, trace = False)
+    task_run_treadmill = cotask.Task(run_treadmill(controller), name = 'Task_Run_Treadmill', priority = 1, period = 5, profile = True, trace = False)
     task_force_sensing = cotask.Task(force_sensing(), name = 'Task_Force_Sensing', priority = 1, period = 5, profile = True, trace = False)
-    task_send_recv_data = cotask.Task(send_recv_data(), name = 'Task_Send_Recv_Data', priority = 1, period = 5, profile = True, trace = False)
+    task_send_recv_data = cotask.Task(send_recv_data(can,force,location,speed), name = 'Task_Send_Recv_Data', priority = 1, period = 5, profile = True, trace = False)
     cotask.task_list.append(task_mastermind)
     cotask.task_list.append(task_run_treadmill)
     cotask.task_list.append(task_force_sensing)
