@@ -151,4 +151,4 @@ if __name__ == "__main__":
         while(True):
             cotask.task_list.pri_sched()
     except KeyboardInterrupt:
-        print('\n\r\r> Program Terminated')
+            print('leaving')
