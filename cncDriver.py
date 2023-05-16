@@ -1,9 +1,12 @@
+import pyb
+from pyb import Pin, Timer
 class cncDriver: 
-    def __init__(self, EN_pin, tim):
+    def __init__(self, EN_pin, tim, chn_pin):
         self.EN_pin = EN_pin                                                     # Enable pin                                                                                       
         self.direction = 1                                                       # direction pin, 1 is forward, 0 is backwards
         self.tim = tim                                                           # Timer for sending PWM
-        self.chn = self.tim.channel(1, pyb.Timer.PWM, pulse_width_percent=50)  # Timer channel in PWM mode, 50% duty cycle, send PWM on this pin as well
+        self.chn_pin = chn_pin
+        self.chn = self.tim.channel(1, pyb.Timer.PWM, pin = self.chn_pin, pulse_width_percent=50)    # Timer channel in PWM mode, 50% duty cycle, send PWM on this pin as well
         self.speed_sp = 0
 
 # input: speed set point in mph 
@@ -23,18 +26,17 @@ class cncDriver:
         motor_shaft_speed = (tread_roller_speed)*pulley_reduction               # motor shaft speed (rpm)
         timer_freq = (6*motor_shaft_speed)/step_angle                           # required timer freq to achieve motor speed (Hz)
 
-        self.tim.freq(timer_freq)                                               # set timer to desired freq from above
+        self.tim.freq(timer_freq)                                              # set timer to desired freq from above
+        self.chn.pulse_width_percent(50)
 
 
     def enable (self):
         self.EN_pin = Pin(self.EN_pin,mode=Pin.OUT_PP)
         self.EN_pin.high()
-        print('enable pin high\n')
         pass
 
     def disable (self):
         self.EN_pin = Pin(self.EN_pin,mode=Pin.OUT_PP)
         self.EN_pin.low()
-        print('enable pin low\n')
         pass
 
